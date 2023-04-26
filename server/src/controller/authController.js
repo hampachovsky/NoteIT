@@ -64,7 +64,7 @@ const authController = {
     async getMe(req, res) {
         try {
             const userFromToken = req.user;
-            const user = await User.findById(userFromToken._id).populate('notes');
+            const user = await User.findById(userFromToken._id).populate('archivedNotes');
             return res.status(200).json(user);
         } catch (e) {
             console.log(e);

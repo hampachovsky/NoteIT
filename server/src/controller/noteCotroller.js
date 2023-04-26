@@ -29,19 +29,19 @@ const noteController = {
         if (!(body.title || body.content)) {
             return res.status(400).json({ error: 'Title or content not provided' });
         }
-        let userWhoAdds;
+        let userWhoArchive;
         try {
-            userWhoAdds = await User.findById(userFromToken._id);
+            userWhoArchive = await User.findById(userFromToken._id);
         } catch (e) {
             res.status(500).json({ error: 'Provided user is not found' });
         }
-        if (!userWhoAdds) {
+        if (!userWhoArchive) {
             return res.status(500).json({ error: 'User from token not found' });
         }
         const noteToAdd = {
             title: body.title,
             content: body.content,
-            author: userWhoAdds._id,
+            author: userWhoArchive._id,
             tags: body.tags,
         };
         let savedNote;
@@ -56,9 +56,9 @@ const noteController = {
             return res.status(500).json({ error: 'User from token not found' });
         }
         try {
-            await User.findByIdAndUpdate(userWhoAdds._id, {
-                ...userWhoAdds,
-                notes: userWhoAdds.notes.push(savedNote._id),
+            await User.findByIdAndUpdate(userWhoArchive._id, {
+                ...userWhoArchive,
+                notes: userWhoArchive.notes.push(savedNote._id),
             });
         } catch (e) {
             console.log(e);
@@ -104,6 +104,7 @@ const noteController = {
             if (!noteId) return res.status(400).json({ error: 'Note id not provided' });
 
             user.notes = user.notes.filter((e) => e._id.toString() !== noteId);
+            user.archivedNotes = user.archivedNotes.filter((e) => e._id.toString() !== noteId);
             await user.save();
             await Note.findByIdAndRemove(noteId);
             return res.status(200).json(null);
@@ -111,6 +112,61 @@ const noteController = {
             console.log(error);
             return res.status(400).json({ error: 'failed create note' });
         }
+    },
+    async archive(req, res) {
+        const noteId = req.params.id;
+        const userFromToken = req.user;
+        let userWhoArchive;
+        try {
+            userWhoArchive = await User.findById(userFromToken._id);
+        } catch (e) {
+            res.status(500).json({ error: 'Provided user is not found' });
+        }
+        if (!userWhoArchive) {
+            return res.status(500).json({ error: 'User from token not found' });
+        }
+        if (userWhoArchive.archivedNotes.includes(noteId)) {
+            return res.status(500).json({ error: 'This note already archived' });
+        }
+        try {
+            await User.findByIdAndUpdate(userWhoArchive._id, {
+                ...userWhoArchive,
+                archivedNotes: userWhoArchive.archivedNotes.push(noteId),
+            });
+        } catch (e) {
+            console.log(e);
+            return res
+                .status(500)
+                .json({ error: 'User update while archiving note unsuccessfull' });
+        }
+
+        return res.status(200).json(userWhoArchive);
+    },
+    async unArchive(req, res) {
+        const noteId = req.params.id;
+        const userFromToken = req.user;
+        let userWhoArchive;
+        try {
+            userWhoArchive = await User.findById(userFromToken._id);
+        } catch (e) {
+            res.status(500).json({ error: 'Provided user is not found' });
+        }
+        if (!userWhoArchive) {
+            return res.status(500).json({ error: 'User from token not found' });
+        }
+        try {
+            userWhoArchive.archivedNotes = userWhoArchive.archivedNotes.filter(
+                (e) => e._id.toString() !== noteId,
+            );
+            userWhoArchive.save();
+        } catch (e) {
+            console.log(e);
+            return res
+                .status(500)
+                .json({ error: 'User update while unarchiving note unsuccessfull' });
+        }
+
+        return res.status(200).json(userWhoArchive);
     },
 };
 

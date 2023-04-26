@@ -9,5 +9,7 @@ router.get('/:id', userExtractor, noteController.getById);
 router.post('/', userExtractor, noteController.create);
 router.delete('/:id', userExtractor, noteController.delete);
 router.put('/:id', noteController.update);
+router.put('/archive/:id', userExtractor, noteController.archive);
+router.put('/unarchive/:id', userExtractor, noteController.unArchive);
 
 export default router;

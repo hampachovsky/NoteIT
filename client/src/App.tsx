@@ -1,15 +1,15 @@
-import React from 'react';
-import { theme } from './utils/themeCreator';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { PrivateLayout } from 'components/Layout/PrivateLayout';
 import { PublicLayout } from 'components/Layout/PublicLayout';
-import SignIn from 'pages/SignIn';
 import { RoutesPath } from 'constants/routes';
+import { Home } from 'pages/Home';
+import SignIn from 'pages/SignIn';
 import SignUp from 'pages/SignUp';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { theme } from './utils/themeCreator';
 
 function App() {
-    const isAuth = false;
+    const isAuth = true;
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline>
@@ -17,7 +17,7 @@ function App() {
                     {isAuth ? (
                         <PrivateLayout>
                             <Routes>
-                                <Route path={RoutesPath.HOME} element={<div>Home</div>}></Route>
+                                <Route path={RoutesPath.HOME} element={<Home />}></Route>
                                 <Route path='*' element={<Navigate to='/' />} />
                             </Routes>
                         </PrivateLayout>

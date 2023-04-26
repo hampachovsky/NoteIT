@@ -14,6 +14,12 @@ const UserSchema = new mongoose.Schema({
             ref: 'Note',
         },
     ],
+    archivedNotes: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Note',
+        },
+    ],
 });
 
 UserSchema.set('toJSON', {
