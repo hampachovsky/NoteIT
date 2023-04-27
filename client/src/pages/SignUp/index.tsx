@@ -1,20 +1,25 @@
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import * as yup from 'yup';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { RoutesPath } from 'constants/routes';
 import useStyles from 'pages/SignIn/styles';
 import * as React from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
-import { SignUpPayload } from 'types';
+import { Link, useNavigate } from 'react-router-dom';
+import { LoadingStatus, SignUpPayload } from 'types';
 import { ErrorMessage } from 'components/common/ErrorMessage';
+import { RoutesPath } from 'constants/routes';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { selectUserIsLoading, selectUserStatusSuccess } from 'store/slices/user/selectors';
+import { fetchSignUp } from 'store/slices/user/thunk';
+import { setUserStatus } from 'store/slices/user/userSlice';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { useClearUserError } from 'hooks/useClearUserError';
 
 const validationSchema = yup
     .object()
@@ -36,8 +41,15 @@ const validationSchema = yup
     })
     .required();
 
-export default function SignUp() {
+const SignUp: React.FC = () => {
     const styles = useStyles();
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const isLoading = useAppSelector(selectUserIsLoading);
+    const isSuccess = useAppSelector(selectUserStatusSuccess);
+    const error = useAppSelector((state) => state.userReducer.error);
+    const { handleClear } = useClearUserError();
+
     const {
         handleSubmit,
         control,
@@ -54,8 +66,15 @@ export default function SignUp() {
     });
 
     const onSubmit: SubmitHandler<SignUpPayload> = async (data) => {
-        console.log(data);
+        await dispatch(fetchSignUp(data));
     };
+
+    React.useEffect(() => {
+        if (isSuccess) {
+            navigate(RoutesPath.LOGIN, { replace: true });
+            dispatch(setUserStatus(LoadingStatus.IDLE));
+        }
+    }, [dispatch, isSuccess, navigate]);
 
     return (
         <>
@@ -76,6 +95,7 @@ export default function SignUp() {
                     </Typography>
                     <Box component='div' sx={{ mt: 3 }}>
                         <form action='submit' onSubmit={handleSubmit(onSubmit)}>
+                            {error && <ErrorMessage error={error} />}
                             {errors.username?.message && (
                                 <ErrorMessage error={errors.username.message} />
                             )}
@@ -130,18 +150,23 @@ export default function SignUp() {
                                     />
                                 )}
                             />
-                            <Button
+                            <LoadingButton
                                 disabled={!isDirty || !isValid || isSubmitting}
                                 type='submit'
                                 fullWidth
                                 variant='contained'
                                 sx={{ mt: 3, mb: 2 }}
+                                loading={isLoading}
                             >
                                 Sign Up
-                            </Button>
+                            </LoadingButton>
                             <Grid container justifyContent='center'>
                                 <Grid item>
-                                    <Link className={styles.linkStyle} to={RoutesPath.LOGIN}>
+                                    <Link
+                                        onClick={handleClear}
+                                        className={styles.linkStyle}
+                                        to={RoutesPath.LOGIN}
+                                    >
                                         Already have an account? Sign in
                                     </Link>
                                 </Grid>
@@ -152,4 +177,6 @@ export default function SignUp() {
             </Container>
         </>
     );
-}
+};
+
+export default SignUp;

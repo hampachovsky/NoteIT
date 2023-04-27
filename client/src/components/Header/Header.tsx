@@ -1,11 +1,21 @@
 import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useStyles from './styles';
 import { RoutesPath } from 'constants/routes';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { logout } from 'store/slices/user/userSlice';
 
 export const Header: React.FC = () => {
     const styles = useStyles();
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const username = useAppSelector((state) => state.userReducer.user?.username);
+
+    const handleSignOut = (): void => {
+        navigate(RoutesPath.LOGIN, { replace: true });
+        dispatch(logout());
+    };
 
     return (
         <Box sx={{ flexGrow: 1 }} className={styles.header}>
@@ -27,7 +37,10 @@ export const Header: React.FC = () => {
                             NoteIt
                         </Link>
                     </Typography>
-                    <Button color='inherit'>Logout</Button>
+                    <Button color='inherit'>Archive</Button>
+                    <Button onClick={() => handleSignOut()} color='inherit'>
+                        Logout ({username})
+                    </Button>
                 </Toolbar>
             </AppBar>
         </Box>

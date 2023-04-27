@@ -1,14 +1,12 @@
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Container from '@mui/material/Container';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { RoutesPath } from 'constants/routes';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import * as yup from 'yup';
@@ -17,6 +15,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { SignInPayload } from 'types';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { ErrorMessage } from 'components/common/ErrorMessage';
+import { RoutesPath } from 'constants/routes';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { fetchSignIn } from 'store/slices/user/thunk';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { useClearUserError } from 'hooks/useClearUserError';
+import { selectUserIsLoading } from 'store/slices/user/selectors';
 
 const validationSchema = yup
     .object()
@@ -27,8 +31,12 @@ const validationSchema = yup
     })
     .required();
 
-export default function SignIn() {
+const SignIn: React.FC = () => {
     const styles = useStyles();
+    const dispatch = useAppDispatch();
+    const { handleClear } = useClearUserError();
+    const isLoading = useAppSelector(selectUserIsLoading);
+    const error = useAppSelector((state) => state.userReducer.error);
 
     const {
         handleSubmit,
@@ -46,7 +54,7 @@ export default function SignIn() {
     });
 
     const onSubmit: SubmitHandler<SignInPayload> = async (data) => {
-        console.log(data);
+        await dispatch(fetchSignIn(data));
     };
 
     return (
@@ -68,6 +76,7 @@ export default function SignIn() {
                     </Typography>
                     <Box component='div' sx={{ mt: 1 }}>
                         <form action='submit' onSubmit={handleSubmit(onSubmit)}>
+                            {error && <ErrorMessage error={error} />}
                             {errors.username?.message && (
                                 <ErrorMessage error={errors.username.message} />
                             )}
@@ -118,18 +127,23 @@ export default function SignIn() {
                                 )}
                             />
 
-                            <Button
+                            <LoadingButton
                                 disabled={!isDirty || !isValid || isSubmitting}
                                 type='submit'
                                 fullWidth
                                 variant='contained'
                                 sx={{ mt: 3, mb: 2 }}
+                                loading={isLoading}
                             >
                                 Sign In
-                            </Button>
+                            </LoadingButton>
                         </form>
                         <Grid container sx={{ justifyContent: 'center' }}>
-                            <Link className={styles.linkStyle} to={RoutesPath.REGISTER}>
+                            <Link
+                                onClick={handleClear}
+                                className={styles.linkStyle}
+                                to={RoutesPath.REGISTER}
+                            >
                                 Don't have an account? Sign Up
                             </Link>
                         </Grid>
@@ -138,4 +152,6 @@ export default function SignIn() {
             </Container>
         </>
     );
-}
+};
+
+export default SignIn;

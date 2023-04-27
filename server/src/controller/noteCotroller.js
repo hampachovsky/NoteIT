@@ -4,8 +4,13 @@ import Note from '../models/Note.js';
 const noteController = {
     async getAll(req, res) {
         try {
-            let notes = await Note.find().populate({ path: 'author', select: 'username' });
-            notes = notes.sort((a, b) => new Date(b.created) - new Date(a.created));
+            const userFromToken = req.user;
+            const user = await User.findById(userFromToken._id);
+            if (!user) {
+                return res.status(500).json({ error: 'User from token not found' });
+            }
+            let notes = await Note.find({ author: user._id });
+            notes = notes.sort((a, b) => new Date(b.noteDate) - new Date(a.noteDate));
             return res.status(200).json(notes);
         } catch (e) {
             console.log(e);
