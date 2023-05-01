@@ -10,13 +10,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import useStyles from './styles';
 
-export const Note = () => {
+export const Note: React.FC = () => {
     let type = 'minor';
     /* let type = 'warning'; */
     /*  let type = 'important'; */
     const styles = useStyles();
     return (
-        <Card sx={{ minWidth: 340, maxWidth: 360, marginTop: 0, marginBottom: 10 }}>
+        <Card sx={{ minWidth: 280, maxWidth: 360, marginTop: 0, marginBottom: 10 }}>
             <CardHeader
                 className={
                     type === 'minor'

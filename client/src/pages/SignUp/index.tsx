@@ -26,18 +26,18 @@ const validationSchema = yup
     .shape({
         username: yup
             .string()
-            .min(3, 'Username must be greater than 3 characters')
-            .max(128, 'Username must be less than 128 characters')
-            .required('Please enter a username'),
+            .min(3, `Ім'я користувача повинно містити більше 3 символів`)
+            .max(128, `Ім'я користувача повинно містити менше 128 символів`)
+            .required(`Будь ласка, введіть ім'я користувача`),
         password: yup
             .string()
-            .min(4, 'Password must be greater than 4 characters')
-            .max(64, 'Password must be less than 64 characters')
-            .required('Please enter a password'),
+            .min(4, 'Пароль повинен містити більше 4 символів')
+            .max(64, 'Пароль повинен містити менше 64 символів')
+            .required('Будь ласка, введіть пароль'),
         confirmPassword: yup
             .string()
-            .required('Please confirm a password')
-            .oneOf([yup.ref('password'), null as any], 'Passwords must match'),
+            .required('Будь ласка, підтвердіть пароль')
+            .oneOf([yup.ref('password'), null as any], 'Паролі повинні співпадати'),
     })
     .required();
 
@@ -91,7 +91,7 @@ const SignUp: React.FC = () => {
                         <LockOutlinedIcon />
                     </Avatar>
                     <Typography component='h1' variant='h5'>
-                        Sign up
+                        Реєстрація
                     </Typography>
                     <Box component='div' sx={{ mt: 3 }}>
                         <form action='submit' onSubmit={handleSubmit(onSubmit)}>
@@ -158,7 +158,7 @@ const SignUp: React.FC = () => {
                                 sx={{ mt: 3, mb: 2 }}
                                 loading={isLoading}
                             >
-                                Sign Up
+                                Створити
                             </LoadingButton>
                             <Grid container justifyContent='center'>
                                 <Grid item>
@@ -167,7 +167,7 @@ const SignUp: React.FC = () => {
                                         className={styles.linkStyle}
                                         to={RoutesPath.LOGIN}
                                     >
-                                        Already have an account? Sign in
+                                        Уже є аккаунт? Увійдіть.
                                     </Link>
                                 </Grid>
                             </Grid>

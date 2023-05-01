@@ -25,8 +25,8 @@ import { selectUserIsLoading } from 'store/slices/user/selectors';
 const validationSchema = yup
     .object()
     .shape({
-        username: yup.string().required('Please enter a username'),
-        password: yup.string().required('Please enter a password'),
+        username: yup.string().required(`Будь ласка, введіть ім'я користувача`),
+        password: yup.string().required('Будь ласка, введіть пароль'),
         rememberMe: yup.boolean(),
     })
     .required();
@@ -72,7 +72,7 @@ const SignIn: React.FC = () => {
                         <LockOutlinedIcon />
                     </Avatar>
                     <Typography component='h1' variant='h5'>
-                        Sign in
+                        Вхід
                     </Typography>
                     <Box component='div' sx={{ mt: 1 }}>
                         <form action='submit' onSubmit={handleSubmit(onSubmit)}>
@@ -135,7 +135,7 @@ const SignIn: React.FC = () => {
                                 sx={{ mt: 3, mb: 2 }}
                                 loading={isLoading}
                             >
-                                Sign In
+                                Увійти
                             </LoadingButton>
                         </form>
                         <Grid container sx={{ justifyContent: 'center' }}>
@@ -144,7 +144,7 @@ const SignIn: React.FC = () => {
                                 className={styles.linkStyle}
                                 to={RoutesPath.REGISTER}
                             >
-                                Don't have an account? Sign Up
+                                Немає аккаунту? Створіть
                             </Link>
                         </Grid>
                     </Box>
