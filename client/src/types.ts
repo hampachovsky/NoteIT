@@ -64,4 +64,6 @@ export interface SignUpPayload {
     confirmPassword: string;
 }
 
+export type NotePayloadType = Omit<INote, '_id'>;
+
 export type RequestErrorType = AxiosError<{ error: string }>;

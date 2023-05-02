@@ -1,25 +1,44 @@
-import React from 'react';
-import dayjs, { Dayjs } from 'dayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { yupResolver } from '@hookform/resolvers/yup';
+import CloseIcon from '@mui/icons-material/Close';
+import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import CloseIcon from '@mui/icons-material/Close';
-import { NoteType } from 'types';
-import useStyles from './styles';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { ErrorMessage } from 'components/common/ErrorMessage';
 import { StyledBadge } from 'components/common/StyledBadge';
+import dayjs from 'dayjs';
+import React, { useEffect } from 'react';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { NotePayloadType, NoteType } from 'types';
+import * as yup from 'yup';
+import useStyles from './styles';
+
+const validationSchema = yup
+    .object()
+    .shape({
+        title: yup
+            .string()
+            .min(3, `Заголовок повинен бути більше 3 символів`)
+            .max(128, `Заголовок повинен бути менше 128 символів`)
+            .required(`Будь ласка, введіть заголовок`),
+        content: yup
+            .string()
+            .min(4, 'Опис повинен містити більше 4 символів')
+            .max(64, 'Опис повинен містити менше 64 символів')
+            .required('Будь ласка, введіть опис'),
+        noteType: yup.string().oneOf([NoteType.minor, NoteType.warning, NoteType.important]),
+        noteDate: yup.date().required('Оберіть дату!').typeError('Введіть дату!'),
+    })
+    .required();
 
 type PropsType = {
     isModalVisible: boolean;
@@ -28,11 +47,31 @@ type PropsType = {
 
 export const NoteFrom: React.FC<PropsType> = ({ isModalVisible, onCancel }) => {
     const styles = useStyles();
-    const [value, setValue] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
-    const [noteType, setNoteType] = React.useState<NoteType | null | undefined>(null);
 
-    const handleChange = (event: SelectChangeEvent) => {
-        setNoteType(event.target.value as NoteType);
+    const {
+        handleSubmit,
+        control,
+        reset,
+        formState: { errors, isDirty, isValid, isSubmitting, isSubmitSuccessful },
+    } = useForm<NotePayloadType>({
+        defaultValues: {
+            title: '',
+            content: '',
+            noteDate: dayjs() as unknown as string,
+            noteType: NoteType.minor,
+        },
+        resolver: yupResolver(validationSchema),
+        mode: 'onBlur',
+        reValidateMode: 'onSubmit',
+    });
+
+    useEffect(() => {
+        reset();
+    }, [isSubmitSuccessful, reset]);
+
+    const onSubmit: SubmitHandler<NotePayloadType> = ({ title, content, noteDate, noteType }) => {
+        const payload = { title, content, noteDate: dayjs(noteDate).format(), noteType };
+        console.log(payload);
     };
 
     return (
@@ -53,64 +92,114 @@ export const NoteFrom: React.FC<PropsType> = ({ isModalVisible, onCancel }) => {
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
-                <DialogContent>
-                    <TextField
-                        autoFocus
-                        margin='dense'
-                        id='title'
-                        label='Заголовок нотатки'
-                        type='text'
-                        fullWidth
-                        variant='standard'
-                    />
-                    <TextField
-                        autoFocus
-                        margin='dense'
-                        id='content'
-                        label='Опис нотатки'
-                        type='text'
-                        fullWidth
-                        variant='standard'
-                    />
-                    <Box component='div' className={styles.formItemWrapper}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker
-                                label='Оберіть дату'
-                                sx={{ width: '100%' }}
-                                value={value}
-                                onChange={(newValue) => setValue(newValue)}
+                <form action='submit' onSubmit={handleSubmit(onSubmit)}>
+                    <DialogContent>
+                        <Box component='div' sx={{ marginTop: '2px' }}>
+                            {errors.title?.message && <ErrorMessage error={errors.title.message} />}
+                        </Box>
+                        <Controller
+                            name='title'
+                            control={control}
+                            render={({ field }) => (
+                                <TextField
+                                    autoFocus
+                                    margin='dense'
+                                    id='title'
+                                    label='Заголовок нотатки'
+                                    type='text'
+                                    fullWidth
+                                    variant='standard'
+                                    {...field}
+                                />
+                            )}
+                        />
+                        <Box component='div' sx={{ marginTop: 2 }}>
+                            {errors.content?.message && (
+                                <ErrorMessage error={errors.content.message} />
+                            )}
+                        </Box>
+
+                        <Controller
+                            name='content'
+                            control={control}
+                            render={({ field }) => (
+                                <TextField
+                                    autoFocus
+                                    margin='dense'
+                                    id='content'
+                                    label='Опис нотатки'
+                                    type='text'
+                                    fullWidth
+                                    variant='standard'
+                                    {...field}
+                                />
+                            )}
+                        />
+                        <Box component='div' className={styles.formItemWrapper}>
+                            {errors.noteDate?.message && (
+                                <ErrorMessage error={errors.noteDate.message} />
+                            )}
+                            <Controller
+                                name='noteDate'
+                                control={control}
+                                render={({ field }) => (
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            label='Оберіть дату'
+                                            sx={{ width: '100%' }}
+                                            format={'YYYY.MM.DD'}
+                                            {...field}
+                                        />
+                                    </LocalizationProvider>
+                                )}
                             />
-                        </LocalizationProvider>
-                    </Box>
-                    <Box component='div' className={styles.formItemWrapper}>
-                        <Select
-                            id='note-type-select'
-                            sx={{ width: '100%' }}
-                            value={noteType!}
-                            label='Тип нотатки'
-                            onChange={handleChange}
+                        </Box>
+                        <Box component='div' className={styles.formItemWrapper}>
+                            {errors.noteType?.message && (
+                                <ErrorMessage error={errors.noteType.message} />
+                            )}
+                            <Controller
+                                name='noteType'
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        id='note-type-select'
+                                        sx={{ width: '100%' }}
+                                        label='Тип нотатки'
+                                        {...field}
+                                    >
+                                        <MenuItem value={NoteType.minor}>
+                                            <StyledBadge badgeContent='' color='primary'>
+                                                Звичайна
+                                            </StyledBadge>
+                                        </MenuItem>
+                                        <MenuItem value={NoteType.warning}>
+                                            <StyledBadge badgeContent='' color='warning'>
+                                                Важлива
+                                            </StyledBadge>
+                                        </MenuItem>
+                                        <MenuItem value={NoteType.important}>
+                                            <StyledBadge badgeContent='' color='error'>
+                                                Срочна
+                                            </StyledBadge>
+                                        </MenuItem>
+                                    </Select>
+                                )}
+                            />
+                        </Box>
+                    </DialogContent>
+                    <DialogActions>
+                        <LoadingButton
+                            disabled={!isDirty || !isValid || isSubmitting}
+                            type='submit'
+                            fullWidth
+                            variant='contained'
+                            onClick={onCancel}
                         >
-                            <MenuItem value={NoteType.minor}>
-                                <StyledBadge badgeContent='' color='primary'>
-                                    Звичайна
-                                </StyledBadge>
-                            </MenuItem>
-                            <MenuItem value={NoteType.warning}>
-                                <StyledBadge badgeContent='' color='warning'>
-                                    Важлива
-                                </StyledBadge>
-                            </MenuItem>
-                            <MenuItem value={NoteType.important}>
-                                <StyledBadge badgeContent='' color='error'>
-                                    Срочна
-                                </StyledBadge>
-                            </MenuItem>
-                        </Select>
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={onCancel}>Відправити</Button>
-                </DialogActions>
+                            Відправити
+                        </LoadingButton>
+                    </DialogActions>
+                </form>
             </Dialog>
         </>
     );
