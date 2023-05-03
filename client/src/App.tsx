@@ -7,7 +7,6 @@ import SignUp from 'pages/SignUp';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { theme } from './utils/themeCreator';
 import { RoutesPath } from 'constants/routes';
-import CircularProgress from '@mui/material/CircularProgress';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { fetchUserData } from 'store/slices/user/thunk';
 import { useEffect } from 'react';

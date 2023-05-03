@@ -17,6 +17,12 @@ export enum NoteType {
     important = 'important',
 }
 
+export type FiltersType = {
+    type: string;
+    date: string;
+    queryString: string;
+};
+
 export interface State {
     status: LoadingStatus;
     error: string | null;
@@ -40,6 +46,10 @@ export interface INote {
     content: string;
     noteType: NoteType;
     noteDate: string;
+}
+
+export interface NoteState extends State {
+    filters: FiltersType;
 }
 
 export interface IUser {

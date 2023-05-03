@@ -9,19 +9,22 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import useStyles from './styles';
+import { INote } from 'types';
+import dayjs from 'dayjs';
 
-export const Note: React.FC = () => {
-    let type = 'minor';
-    /* let type = 'warning'; */
-    /*  let type = 'important'; */
+type Props = {
+    note: INote;
+};
+
+export const Note: React.FC<Props> = ({ note }) => {
     const styles = useStyles();
     return (
-        <Card sx={{ minWidth: 280, maxWidth: 360, marginTop: 0, marginBottom: 10 }}>
+        <Card sx={{ minWidth: 360, maxWidth: 360, marginTop: 0, marginBottom: 10 }}>
             <CardHeader
                 className={
-                    type === 'minor'
+                    note.noteType === 'minor'
                         ? styles.minor
-                        : type === 'warning'
+                        : note.noteType === 'warning'
                         ? styles.warning
                         : styles.important
                 }
@@ -32,18 +35,18 @@ export const Note: React.FC = () => {
                 }
                 title={
                     <Typography className={styles.cardHeaderText} variant='h4'>
-                        WAKE UP
+                        {note.title}
                     </Typography>
                 }
                 subheader={
-                    <Typography className={styles.cardHeaderText}>September 14, 2016</Typography>
+                    <Typography className={styles.cardHeaderText}>
+                        {dayjs(note.noteDate).format('YYYY MMMM DD')}
+                    </Typography>
                 }
             />
             <CardContent>
                 <Typography variant='h6' component='div'>
-                    benevolent Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas dolores
-                    ab soluta non dolorem commodi tempore voluptas accusamus rem, totam velit ipsa
-                    assumenda culpa suscipit dolor aut esse fugiat. Facilis.
+                    {note.content}
                 </Typography>
             </CardContent>
             <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>

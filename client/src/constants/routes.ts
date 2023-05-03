@@ -10,3 +10,13 @@ export enum AuthApiRoutes {
     REGISTER = '/auth/register',
     AUTH_ME = '/auth/me',
 }
+
+export enum NoteApiRoutes {
+    GET_ALL = '/notes/all',
+    CREATE = '/notes',
+    UPDATE = '/notes/',
+    DELETE = '/notes/',
+    GET_BY = '/notes',
+    ARCHIVE = '/notes/archive/',
+    UNARCHIVE = '/notes/unarchive/',
+}
