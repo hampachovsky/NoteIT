@@ -18,9 +18,11 @@ import { StyledBadge } from 'components/common/StyledBadge';
 import dayjs from 'dayjs';
 import React, { useEffect } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { NotePayloadType, NoteType } from 'types';
+import { useAppSelector } from 'store/hooks';
+import { INote, NotePayloadType, NoteType } from 'types';
 import * as yup from 'yup';
 import useStyles from './styles';
+import { selectNotesIsLoading } from 'store/slices/note/selectors';
 
 const validationSchema = yup
     .object()
@@ -43,10 +45,21 @@ const validationSchema = yup
 type PropsType = {
     isModalVisible: boolean;
     onCancel: () => void;
+    onSubmit: (data: NotePayloadType) => void;
+    isEditing?: boolean;
+    note?: INote | null;
 };
 
-export const NoteFrom: React.FC<PropsType> = ({ isModalVisible, onCancel }) => {
+export const NoteFrom: React.FC<PropsType> = ({
+    isModalVisible,
+    onCancel,
+    onSubmit,
+    isEditing = false,
+    note,
+}) => {
     const styles = useStyles();
+    const isLoading = useAppSelector(selectNotesIsLoading);
+    const error = useAppSelector((state) => state.noteReducer.error);
 
     const {
         handleSubmit,
@@ -57,7 +70,7 @@ export const NoteFrom: React.FC<PropsType> = ({ isModalVisible, onCancel }) => {
         defaultValues: {
             title: '',
             content: '',
-            noteDate: dayjs() as unknown as string,
+            noteDate: dayjs().format('YYYY.MM.DD'),
             noteType: NoteType.minor,
         },
         resolver: yupResolver(validationSchema),
@@ -66,19 +79,33 @@ export const NoteFrom: React.FC<PropsType> = ({ isModalVisible, onCancel }) => {
     });
 
     useEffect(() => {
+        reset({
+            title: note?.title,
+            content: note?.content,
+            noteType: note?.noteType,
+            noteDate: dayjs(note?.noteDate) as unknown as string,
+        });
+    }, [note, reset]);
+
+    useEffect(() => {
         reset();
     }, [isSubmitSuccessful, reset]);
 
-    const onSubmit: SubmitHandler<NotePayloadType> = ({ title, content, noteDate, noteType }) => {
+    const onClickSubmit: SubmitHandler<NotePayloadType> = ({
+        title,
+        content,
+        noteDate,
+        noteType,
+    }) => {
         const payload = { title, content, noteDate: dayjs(noteDate).format(), noteType };
-        console.log(payload);
+        onSubmit(payload);
     };
 
     return (
         <>
             <Dialog open={isModalVisible} onClose={onCancel}>
                 <DialogTitle>
-                    Створити нотатку
+                    {isEditing ? 'Редагувати нотатку' : 'Створити нотатку'}
                     <IconButton
                         aria-label='close'
                         onClick={onCancel}
@@ -92,8 +119,9 @@ export const NoteFrom: React.FC<PropsType> = ({ isModalVisible, onCancel }) => {
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
-                <form action='submit' onSubmit={handleSubmit(onSubmit)}>
+                <form action='submit' onSubmit={handleSubmit(onClickSubmit)}>
                     <DialogContent>
+                        {error && <ErrorMessage error={error} />}
                         <Box component='div' sx={{ marginTop: '2px' }}>
                             {errors.title?.message && <ErrorMessage error={errors.title.message} />}
                         </Box>
@@ -191,6 +219,7 @@ export const NoteFrom: React.FC<PropsType> = ({ isModalVisible, onCancel }) => {
                     <DialogActions>
                         <LoadingButton
                             disabled={!isDirty || !isValid || isSubmitting}
+                            loading={isLoading}
                             type='submit'
                             fullWidth
                             variant='contained'

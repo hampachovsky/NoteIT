@@ -15,6 +15,12 @@ const useStyles = makeStyles((theme: Theme) =>
         cardHeaderText: {
             color: theme.palette.black,
         },
+        card: {
+            minWidth: 360,
+            maxWidth: 360,
+            marginTop: 0,
+            marginBottom: 10,
+        },
     }),
 );
 

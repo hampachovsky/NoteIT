@@ -47,7 +47,8 @@ const noteController = {
             title: body.title,
             content: body.content,
             author: userWhoArchive._id,
-            tags: body.tags,
+            noteDate: body.noteDate,
+            noteType: body.noteType,
         };
         let savedNote;
         try {

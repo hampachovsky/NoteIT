@@ -14,12 +14,19 @@ import dayjs from 'dayjs';
 
 type Props = {
     note: INote;
+    onDeleteSubmit: (id: string) => void;
+    onEdit: (note: INote) => void;
 };
 
-export const Note: React.FC<Props> = ({ note }) => {
+export const Note: React.FC<Props> = ({ note, onDeleteSubmit, onEdit }) => {
     const styles = useStyles();
+
+    const onDelete = () => {
+        onDeleteSubmit(note._id);
+    };
+
     return (
-        <Card sx={{ minWidth: 360, maxWidth: 360, marginTop: 0, marginBottom: 10 }}>
+        <Card className={styles.card}>
             <CardHeader
                 className={
                     note.noteType === 'minor'
@@ -29,7 +36,7 @@ export const Note: React.FC<Props> = ({ note }) => {
                         : styles.important
                 }
                 action={
-                    <IconButton aria-label='settings'>
+                    <IconButton aria-label='settings' onClick={() => onEdit(note)}>
                         <EditIcon className={styles.cardHeaderText} />
                     </IconButton>
                 }
@@ -53,7 +60,7 @@ export const Note: React.FC<Props> = ({ note }) => {
                 <IconButton aria-label='settings'>
                     <ArchiveIcon />
                 </IconButton>
-                <IconButton aria-label='settings'>
+                <IconButton aria-label='settings' onClick={onDelete}>
                     <DeleteIcon />
                 </IconButton>
             </CardActions>
