@@ -9,6 +9,12 @@ const useStyles = makeStyles((theme: Theme) =>
             justifyContent: 'center',
             alignItems: 'center',
         },
+        searchButton: {
+            marginLeft: '10px',
+            fontSize: '17px',
+            width: '70px',
+            height: '48px',
+        },
     }),
 );
 

@@ -2,14 +2,19 @@ import React, { useState } from 'react';
 
 import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
+import SearchIcon from '@mui/icons-material/Search';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import { StyledBadge } from 'components/common/StyledBadge';
 import { NoteType } from 'types';
 import useStyles from './style';
+import { useAppDispatch } from 'store/hooks';
+import { fetchNotesBy } from 'store/slices/note/thunk';
 
 export const NoteFilter = () => {
     const styles = useStyles();
+    const dispatch = useAppDispatch();
     const [searchString, setSearchString] = useState('');
     const [filterType, setFilterType] = useState('');
     const [filterDate, setFilterDate] = useState('');
@@ -26,6 +31,15 @@ export const NoteFilter = () => {
         setFilterType(e.target.value);
     };
 
+    const onSearch = () => {
+        const searchParams = {
+            type: filterType,
+            date: filterDate,
+            queryString: searchString,
+        };
+        dispatch(fetchNotesBy(searchParams));
+    };
+
     return (
         <Box component='div' className={styles.filterWrapper}>
             <TextField sx={{ width: '30%' }} onChange={handleSearchSubmit} value={searchString} />
@@ -33,8 +47,8 @@ export const NoteFilter = () => {
                 <MenuItem value=''>
                     <em>Всі</em>
                 </MenuItem>
-                <MenuItem value={10}>Новіші</MenuItem>
-                <MenuItem value={20}>Старіші</MenuItem>
+                <MenuItem value={'newest'}>Новіші</MenuItem>
+                <MenuItem value={'earliest'}>Старіші</MenuItem>
             </Select>
             <Select
                 sx={{ width: '20%' }}
@@ -61,6 +75,9 @@ export const NoteFilter = () => {
                     </StyledBadge>
                 </MenuItem>
             </Select>
+            <Button variant='contained' className={styles.searchButton} onClick={onSearch}>
+                <SearchIcon />
+            </Button>
         </Box>
     );
 };

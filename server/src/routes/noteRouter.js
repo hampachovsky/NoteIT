@@ -6,6 +6,7 @@ const router = new Router();
 
 router.get('/all', userExtractor, noteController.getAll);
 router.get('/:id', userExtractor, noteController.getById);
+router.get('/', userExtractor, noteController.getBy);
 router.post('/', userExtractor, noteController.create);
 router.delete('/:id', userExtractor, noteController.delete);
 router.put('/:id', noteController.update);

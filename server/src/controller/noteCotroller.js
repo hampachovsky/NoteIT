@@ -28,6 +28,36 @@ const noteController = {
             return res.status(400).json({ error: 'failed  take note' });
         }
     },
+    async getBy(req, res) {
+        try {
+            const userFromToken = req.user;
+            const user = await User.findById(userFromToken._id);
+            if (!user) {
+                return res.status(500).json({ error: 'User from token not found' });
+            }
+            let notes = await Note.find({ author: user._id }, { tasks: 0 });
+            const { type, date, queryString } = req.query;
+            if (queryString) {
+                const regexQuery = {
+                    author: user._id,
+                    title: new RegExp(req.query.queryString, 'i'),
+                };
+                notes = await Note.find(regexQuery, { tasks: 0 });
+            }
+            if (type === 'minor' || type === 'warning' || type === 'important') {
+                notes = notes.filter((note) => note.noteType === type);
+            }
+            if (date === 'earliest') {
+                notes = notes.sort((a, b) => new Date(a.noteDate) - new Date(b.noteDate));
+            } else if (date === 'newest') {
+                notes = notes.sort((a, b) => new Date(b.noteDate) - new Date(a.noteDate));
+            }
+            return res.status(200).json(notes);
+        } catch (error) {
+            console.log(error);
+            return res.status(400).json({ error: 'failed take notes' });
+        }
+    },
     async create(req, res) {
         const { body } = req;
         const userFromToken = req.user;
