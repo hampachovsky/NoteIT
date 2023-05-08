@@ -10,6 +10,7 @@ export const fetchSignIn = createAsyncThunk(
         try {
             const response = await authAPI.login(payload);
             window.localStorage.setItem('token', response.token);
+            thunkAPI.dispatch(fetchNotes());
             return response.user;
         } catch (error) {
             const err = error as RequestErrorType;
