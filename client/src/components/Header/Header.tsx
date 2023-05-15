@@ -37,7 +37,6 @@ export const Header: React.FC = () => {
                             NoteIt
                         </Link>
                     </Typography>
-                    <Button color='inherit'>Архів</Button>
                     <Button onClick={() => handleSignOut()} color='inherit'>
                         Вийти ({username})
                     </Button>

@@ -7,7 +7,6 @@ import CardHeader from '@mui/material/CardHeader';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ArchiveIcon from '@mui/icons-material/Archive';
 import useStyles from './styles';
 import { INote } from 'types';
 import dayjs from 'dayjs';
@@ -57,9 +56,6 @@ export const Note: React.FC<Props> = ({ note, onDeleteSubmit, onEdit }) => {
                 </Typography>
             </CardContent>
             <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <IconButton aria-label='settings'>
-                    <ArchiveIcon />
-                </IconButton>
                 <IconButton aria-label='settings' onClick={onDelete}>
                     <DeleteIcon />
                 </IconButton>
