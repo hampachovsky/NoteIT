@@ -34,7 +34,7 @@ const authController = {
             if (!(password || username))
                 return res.status(500).json({ error: 'User data missing' });
             const user = await User.findOne({ username });
-            if (!user) return res.status(404).json({ error: 'User not found' });
+            if (!user) return res.status(404).json({ error: 'Користувач не знайдений' });
             const validPassword = await bcrypt.compareSync(password, user.password);
             if (!validPassword)
                 return res.status(401).json({ error: 'Invalid username or password' });
@@ -54,7 +54,7 @@ const authController = {
     async getById(req, res) {
         try {
             const user = await User.findById(req.params.id);
-            if (!user) res.status(404).json({ error: 'User not found' });
+            if (!user) res.status(404).json({ error: 'Користувач не знайдений' });
             return res.status(200).json(user);
         } catch (e) {
             console.log(e);

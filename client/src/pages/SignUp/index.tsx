@@ -143,7 +143,7 @@ const SignUp: React.FC = () => {
                                         margin='normal'
                                         fullWidth
                                         label='Підтвердіть пароль'
-                                        type='confirmPassword'
+                                        type='password'
                                         id='confirmPassword'
                                         autoComplete='current-password'
                                         {...field}
