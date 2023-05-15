@@ -17,7 +17,7 @@ const authController = {
                     .json({ error: 'Password must be greater than 4 and less than 32 characters' });
             }
             const candidate = await User.findOne({ username });
-            if (candidate) return res.status(409).json({ error: 'Username taken' });
+            if (candidate) return res.status(409).json({ error: `Ім'я користувача зайнято` });
             const salt = bcrypt.genSaltSync(10);
             const passwordHash = await bcrypt.hashSync(password, salt);
             const user = new User({ username, password: passwordHash });

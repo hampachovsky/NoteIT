@@ -107,7 +107,7 @@ const SignUp: React.FC = () => {
                                         margin='normal'
                                         fullWidth
                                         id='username'
-                                        label='Username'
+                                        label="Ім'я користувача"
                                         autoComplete='username'
                                         autoFocus
                                         {...field}
@@ -124,7 +124,7 @@ const SignUp: React.FC = () => {
                                     <TextField
                                         margin='normal'
                                         fullWidth
-                                        label='Password'
+                                        label='Пароль'
                                         type='password'
                                         id='password'
                                         autoComplete='current-password'
@@ -142,7 +142,7 @@ const SignUp: React.FC = () => {
                                     <TextField
                                         margin='normal'
                                         fullWidth
-                                        label='Confirm Password'
+                                        label='Підтвердіть пароль'
                                         type='confirmPassword'
                                         id='confirmPassword'
                                         autoComplete='current-password'

@@ -74,8 +74,6 @@ export const NoteFrom: React.FC<PropsType> = ({
             noteType: NoteType.minor,
         },
         resolver: yupResolver(validationSchema),
-        mode: 'onBlur',
-        reValidateMode: 'onSubmit',
     });
 
     useEffect(() => {

@@ -49,8 +49,6 @@ const SignIn: React.FC = () => {
             rememberMe: false,
         },
         resolver: yupResolver(validationSchema),
-        mode: 'onBlur',
-        reValidateMode: 'onSubmit',
     });
 
     const onSubmit: SubmitHandler<SignInPayload> = async (data) => {
@@ -88,7 +86,7 @@ const SignIn: React.FC = () => {
                                         margin='normal'
                                         fullWidth
                                         id='username'
-                                        label='Username'
+                                        label="Ім'я користувача"
                                         autoComplete='username'
                                         autoFocus
                                         {...field}
@@ -105,7 +103,7 @@ const SignIn: React.FC = () => {
                                     <TextField
                                         margin='normal'
                                         fullWidth
-                                        label='Password'
+                                        label='Пароль'
                                         type='password'
                                         id='password'
                                         autoComplete='current-password'
@@ -121,7 +119,7 @@ const SignIn: React.FC = () => {
                                     <FormControlLabel
                                         control={<Checkbox value='remember' color='primary' />}
                                         checked={field.value}
-                                        label='Remember me'
+                                        label="Запам'ятати мене"
                                         {...field}
                                     />
                                 )}
